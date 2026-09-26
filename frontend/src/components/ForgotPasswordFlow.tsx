@@ -10,6 +10,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
+import { authApi } from "../api/auth.api";
 
 interface ForgotPasswordFlowProps {
   onNavigateToLogin: () => void;
@@ -22,7 +23,9 @@ export const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
 }) => {
   const [step, setStep] = useState<Step>("REQUEST_OTP");
   const [contact, setContact] = useState("");
+  const [serverContactHint, setServerContactHint] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [resetToken, setResetToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -56,6 +59,7 @@ export const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
 
   // Mask contact for display (e.g. alex@gmail.com -> al***@gmail.com)
   const getMaskedContact = (val: string) => {
+    if (serverContactHint && serverContactHint !== "masked") return serverContactHint;
     if (!val) return "";
     if (val.includes("@")) {
       const [user, domain] = val.split("@");
@@ -67,37 +71,61 @@ export const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
 
   // OTP box key handler
   const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
+    // Only accept numeric input
+    const cleanVal = value.replace(/\D/g, "");
+    if (!cleanVal && value) return;
 
+    if (errorMessage) setErrorMessage(null);
+
+    const digit = cleanVal.slice(-1);
     const newOtp = [...otp];
-    // Take only last character typed
-    newOtp[index] = value.slice(-1);
+    newOtp[index] = digit;
     setOtp(newOtp);
 
-    // Auto-advance to next input
-    if (value && index < 5) {
+    // Auto-advance to next input if digit was entered
+    if (digit && index < 5) {
       otpInputRefs.current[index + 1]?.focus();
     }
   };
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
+    if (e.key === "Backspace") {
+      if (!otp[index] && index > 0) {
+        // Current box is empty, jump to previous box, clear it and focus
+        const newOtp = [...otp];
+        newOtp[index - 1] = "";
+        setOtp(newOtp);
+        otpInputRefs.current[index - 1]?.focus();
+      } else if (otp[index]) {
+        // Clear current box
+        const newOtp = [...otp];
+        newOtp[index] = "";
+        setOtp(newOtp);
+      }
+    } else if (e.key === "ArrowLeft" && index > 0) {
       otpInputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
     }
   };
 
   const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").trim();
-    if (/^\d{6}$/.test(pasted)) {
-      const digits = pasted.split("");
-      setOtp(digits);
-      otpInputRefs.current[5]?.focus();
+    if (errorMessage) setErrorMessage(null);
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pasted.length > 0) {
+      const newOtp = [...otp];
+      for (let i = 0; i < 6; i++) {
+        newOtp[i] = pasted[i] || "";
+      }
+      setOtp(newOtp);
+      const nextIndex = Math.min(pasted.length, 5);
+      otpInputRefs.current[nextIndex]?.focus();
     }
   };
 
   // Step 1: Request OTP Submission
-  const handleRequestOtp = (e: React.FormEvent) => {
+  const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
@@ -107,31 +135,49 @@ export const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
       return;
     }
 
+    const isEmail = trimmed.includes("@");
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const res = await authApi.forgotPassword(
+        isEmail ? { email: trimmed } : { phone: trimmed }
+      );
+      if (res.contactHint) {
+        setServerContactHint(res.contactHint);
+      }
       setStep("VERIFY_OTP");
       setTimer(59);
       setCanResend(false);
-    }, 700);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Failed to dispatch verification code.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Resend OTP handler
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (!canResend) return;
     setErrorMessage(null);
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    const trimmed = contact.trim();
+    const isEmail = trimmed.includes("@");
+    try {
+      await authApi.forgotPassword(
+        isEmail ? { email: trimmed } : { phone: trimmed }
+      );
       setTimer(59);
       setCanResend(false);
       setOtp(["", "", "", "", "", ""]);
       otpInputRefs.current[0]?.focus();
-    }, 500);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Failed to resend code.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Step 2: Verify OTP Submission
-  const handleVerifyOtp = (e: React.FormEvent) => {
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
@@ -141,15 +187,26 @@ export const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
       return;
     }
 
+    const trimmed = contact.trim();
+    const isEmail = trimmed.includes("@");
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const res = await authApi.verifyOtp({
+        email: isEmail ? trimmed : undefined,
+        phone: !isEmail ? trimmed : undefined,
+        otp: fullCode,
+      });
+      setResetToken(res.resetToken);
       setStep("RESET_PASSWORD");
-    }, 700);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Invalid or expired verification code.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Step 3: Reset Password Submission
-  const handleResetPassword = (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
@@ -164,10 +221,17 @@ export const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await authApi.resetPassword({
+        resetToken,
+        newPassword,
+      });
       setStep("SUCCESS");
-    }, 800);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Failed to update password. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -284,7 +348,7 @@ export const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
             <label className="form-label" style={{ textAlign: "center" }}>
               6-Digit Code
             </label>
-            <div className="otp-grid">
+            <div className="otp-container">
               {otp.map((digit, idx) => (
                 <input
                   key={idx}
@@ -293,8 +357,9 @@ export const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
                   }}
                   type="text"
                   inputMode="numeric"
+                  pattern="[0-9]*"
                   maxLength={1}
-                  className="otp-box"
+                  className={`otp-box ${digit ? "has-value" : ""}`}
                   value={digit}
                   onChange={(e) => handleOtpChange(idx, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(idx, e)}

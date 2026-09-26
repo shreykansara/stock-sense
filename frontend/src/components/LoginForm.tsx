@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
 import { GoogleButton } from "./GoogleButton";
+import { useAuth } from "../context/useAuth";
 
 interface LoginFormProps {
   onNavigateToSignup: () => void;
@@ -12,6 +13,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   onNavigateToSignup,
   onNavigateToForgotPassword,
 }) => {
+  const { login, loginWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,13 +42,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     }
 
     setIsLoading(true);
-
-    // Simulate authenticating local UI flow (backend API connection in next phase)
-    setTimeout(() => {
+    try {
+      await login(trimmedEmail, password);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Invalid credentials. Please verify and try again.");
+    } finally {
       setIsLoading(false);
-      // For now, inform that visual authentication is validated
-      alert(`[StockSense Auth Demo]\nAttempted sign-in for: ${trimmedEmail}\n(Visual state verified. Ready for backend hookup.)`);
-    }, 800);
+    }
   };
 
   const isFormValid = email.trim().length > 0 && password.length > 0;
@@ -157,8 +159,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       {/* Google Sign In */}
       <GoogleButton
         label="Sign in with Google"
-        onClick={() => {
-          alert("[Google OAuth]\nGoogle button clicked. Ready to initialize Google Identity Services client ID.");
+        onSuccess={async (idToken) => {
+          await loginWithGoogle(idToken);
+        }}
+        onError={(err) => {
+          setErrorMessage(err);
         }}
         disabled={isLoading}
       />

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { User, Mail, Phone, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
 import { GoogleButton } from "./GoogleButton";
+import { useAuth } from "../context/useAuth";
 
 interface SignupFormProps {
   onNavigateToLogin: () => void;
 }
 
 export const SignupForm: React.FC<SignupFormProps> = ({ onNavigateToLogin }) => {
+  const { register, loginWithGoogle } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -59,13 +61,18 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onNavigateToLogin }) => 
     }
 
     setIsLoading(true);
-
-    // Simulate registration local UI flow
-    setTimeout(() => {
+    try {
+      await register({
+        name: trimmedName,
+        email: trimmedEmail,
+        password,
+        phone: trimmedPhone || undefined,
+      });
+    } catch (err: any) {
+      setErrorMessage(err.message || "Failed to create account. Please try again.");
+    } finally {
       setIsLoading(false);
-      alert(`[StockSense Auth Demo]\nAccount created for ${trimmedName} (${trimmedEmail}${trimmedPhone ? `, ${trimmedPhone}` : ""}).\n(Visual state verified. Ready for backend hookup.)`);
-      onNavigateToLogin();
-    }, 900);
+    }
   };
 
   const isFormValid =
@@ -274,8 +281,11 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onNavigateToLogin }) => 
 
       <GoogleButton
         label="Sign up with Google"
-        onClick={() => {
-          alert("[Google OAuth]\nGoogle button clicked. Ready for Google Identity Services.");
+        onSuccess={async (idToken) => {
+          await loginWithGoogle(idToken);
+        }}
+        onError={(err) => {
+          setErrorMessage(err);
         }}
         disabled={isLoading}
       />
