@@ -1,0 +1,15 @@
+{
+  "name": "stocksense",
+  "version": "1.0.0",
+  "private": true,
+  "description": "StockSense Inventory Management System Workspace",
+  "scripts": {
+    "dev": "npm --prefix backend run dev",
+    "build": "npm --prefix backend run build",
+    "test": "npm --prefix backend run test",
+    "prisma:generate": "npm --prefix backend run prisma:generate",
+    "prisma:push": "npm --prefix backend run prisma:push",
+    "prisma:seed": "npm --prefix backend run prisma:seed",
+    "prisma:studio": "npm --prefix backend run prisma:studio"
+  }
+}
