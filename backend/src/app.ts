@@ -1,12 +1,15 @@
 import express, { Express } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import { config } from "./config/index.js";
 import { requestLogger } from "./middleware/requestLogger.js";
+import { optionalAuthenticate } from "./middleware/auth.middleware.js";
 import { authContext } from "./middleware/authContext.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { swaggerDocument } from "./docs/swagger.js";
 
+import { authRoutes } from "./modules/auth/auth.routes.js";
 import { dashboardRoutes } from "./modules/dashboard/dashboard.routes.js";
 import { operationRoutes } from "./modules/operations/operation.routes.js";
 import { adjustmentRoutes } from "./modules/adjustments/adjustment.routes.js";
@@ -41,9 +44,12 @@ export function createApp(): Express {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
   app.use(requestLogger);
 
-  // Authentication Context Hook (Ready for teammate's JWT middleware)
+  // Authentication Context Hook: optionalAuthenticate populates req.user from JWT if present;
+  // authContext provides development fallback if unauthenticated
+  app.use(optionalAuthenticate);
   app.use(authContext);
 
   // Interactive Swagger API Documentation
@@ -59,6 +65,7 @@ export function createApp(): Express {
   });
 
   // Core API Routes
+  app.use("/api/auth", authRoutes);
   app.use("/api/dashboard", dashboardRoutes);
   app.use("/api/operations", operationRoutes);
   app.use("/api/adjustments", adjustmentRoutes);

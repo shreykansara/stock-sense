@@ -43,27 +43,48 @@ enum PartnerType {
 }
 
 model User {
-  id         String          @id @default(uuid())
-  email      String          @unique
-  name       String
-  role       UserRole        @default(WAREHOUSE_STAFF)
-  createdAt  DateTime        @default(now()) @map("created_at")
-  updatedAt  DateTime        @updatedAt @map("updated_at")
+  id              String    @id @default(uuid())
+  email           String    @unique
+  name            String
+  passwordHash    String?   @map("password_hash")
+  phone           String?   @unique
+  googleId        String?   @unique @map("google_id")
+  role            UserRole  @default(WAREHOUSE_STAFF)
+  phoneVerifiedAt DateTime? @map("phone_verified_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
 
   operations StockOperation[]
   ledgerLogs StockLedger[]
+  resetOtps  PasswordResetOtp[]
 
   @@map("users")
 }
 
+model PasswordResetOtp {
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  otpHash    String    @map("otp_hash")
+  expiresAt  DateTime  @map("expires_at")
+  attempts   Int       @default(0)
+  verifiedAt DateTime? @map("verified_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_otps")
+}
+
 model Warehouse {
-  id         String           @id @default(uuid())
-  name       String
-  shortCode  String           @unique @map("short_code")
-  address    String?
-  isActive   Boolean          @default(true) @map("is_active")
-  createdAt  DateTime         @default(now()) @map("created_at")
-  updatedAt  DateTime         @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  name      String
+  shortCode String   @unique @map("short_code")
+  address   String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   locations  Location[]
   operations StockOperation[]
@@ -72,21 +93,21 @@ model Warehouse {
 }
 
 model Location {
-  id          String         @id @default(uuid())
-  warehouseId String?        @map("warehouse_id")
+  id          String       @id @default(uuid())
+  warehouseId String?      @map("warehouse_id")
   name        String
-  shortCode   String         @map("short_code")
-  type        LocationType   @default(INTERNAL)
-  isActive    Boolean        @default(true) @map("is_active")
-  createdAt   DateTime       @default(now()) @map("created_at")
-  updatedAt   DateTime       @updatedAt @map("updated_at")
+  shortCode   String       @map("short_code")
+  type        LocationType @default(INTERNAL)
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
 
-  warehouse   Warehouse?     @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
-  quants      StockQuant[]
-  movesFrom   StockMove[]    @relation("MoveSourceLocation")
-  movesTo     StockMove[]    @relation("MoveDestLocation")
-  ledgerFrom  StockLedger[]  @relation("LedgerFromLocation")
-  ledgerTo    StockLedger[]  @relation("LedgerToLocation")
+  warehouse  Warehouse?    @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  quants     StockQuant[]
+  movesFrom  StockMove[]   @relation("MoveSourceLocation")
+  movesTo    StockMove[]   @relation("MoveDestLocation")
+  ledgerFrom StockLedger[] @relation("LedgerFromLocation")
+  ledgerTo   StockLedger[] @relation("LedgerToLocation")
 
   @@unique([warehouseId, shortCode])
   @@index([type])
@@ -94,47 +115,47 @@ model Location {
 }
 
 model Category {
-  id          String    @id @default(uuid())
-  name        String    @unique
+  id          String   @id @default(uuid())
+  name        String   @unique
   description String?
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  products    Product[]
+  products Product[]
 
   @@map("categories")
 }
 
 model Product {
-  id            String        @id @default(uuid())
-  sku           String        @unique
+  id            String   @id @default(uuid())
+  sku           String   @unique
   name          String
-  categoryId    String        @map("category_id")
-  uom           String        @default("Units")
-  perUnitCost   Decimal       @default(0) @db.Decimal(12, 2) @map("per_unit_cost")
-  minReorderQty Decimal       @default(0) @db.Decimal(12, 2) @map("min_reorder_qty")
-  isActive      Boolean       @default(true) @map("is_active")
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
+  categoryId    String   @map("category_id")
+  uom           String   @default("Units")
+  perUnitCost   Decimal  @default(0) @map("per_unit_cost") @db.Decimal(12, 2)
+  minReorderQty Decimal  @default(0) @map("min_reorder_qty") @db.Decimal(12, 2)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-  category      Category      @relation(fields: [categoryId], references: [id])
-  quants        StockQuant[]
-  moves         StockMove[]
-  ledgerLogs    StockLedger[]
+  category   Category      @relation(fields: [categoryId], references: [id])
+  quants     StockQuant[]
+  moves      StockMove[]
+  ledgerLogs StockLedger[]
 
   @@index([categoryId])
   @@map("products")
 }
 
 model Partner {
-  id         String          @id @default(uuid())
-  name       String
-  email      String?
-  phone      String?
-  address    String?
-  type       PartnerType     @default(BOTH)
-  createdAt  DateTime        @default(now()) @map("created_at")
-  updatedAt  DateTime        @updatedAt @map("updated_at")
+  id        String      @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  type      PartnerType @default(BOTH)
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
 
   operations StockOperation[]
 
@@ -154,10 +175,10 @@ model StockOperation {
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
 
-  warehouse         Warehouse       @relation(fields: [warehouseId], references: [id])
-  partner           Partner?        @relation(fields: [partnerId], references: [id])
-  responsibleUser   User?           @relation(fields: [responsibleUserId], references: [id])
-  moves             StockMove[]
+  warehouse       Warehouse   @relation(fields: [warehouseId], references: [id])
+  partner         Partner?    @relation(fields: [partnerId], references: [id])
+  responsibleUser User?       @relation(fields: [responsibleUserId], references: [id])
+  moves           StockMove[]
 
   @@index([type, status])
   @@index([warehouseId])
@@ -171,17 +192,17 @@ model StockMove {
   productId        String          @map("product_id")
   sourceLocationId String          @map("source_location_id")
   destLocationId   String          @map("dest_location_id")
-  qtyDemanded      Decimal         @db.Decimal(12, 2) @map("qty_demanded")
-  qtyDone          Decimal         @default(0) @db.Decimal(12, 2) @map("qty_done")
+  qtyDemanded      Decimal         @map("qty_demanded") @db.Decimal(12, 2)
+  qtyDone          Decimal         @default(0) @map("qty_done") @db.Decimal(12, 2)
   status           OperationStatus @default(DRAFT)
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @updatedAt @map("updated_at")
 
-  operation        StockOperation  @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  product          Product         @relation(fields: [productId], references: [id])
-  sourceLocation   Location        @relation("MoveSourceLocation", fields: [sourceLocationId], references: [id])
-  destLocation     Location        @relation("MoveDestLocation", fields: [destLocationId], references: [id])
-  ledgerEntries    StockLedger[]
+  operation      StockOperation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  product        Product        @relation(fields: [productId], references: [id])
+  sourceLocation Location       @relation("MoveSourceLocation", fields: [sourceLocationId], references: [id])
+  destLocation   Location       @relation("MoveDestLocation", fields: [destLocationId], references: [id])
+  ledgerEntries  StockLedger[]
 
   @@index([operationId])
   @@index([productId])
@@ -189,14 +210,14 @@ model StockMove {
 }
 
 model StockQuant {
-  id         String    @id @default(uuid())
-  productId  String    @map("product_id")
-  locationId String    @map("location_id")
-  quantity   Decimal   @default(0) @db.Decimal(12, 2)
-  updatedAt  DateTime  @updatedAt @map("updated_at")
+  id         String   @id @default(uuid())
+  productId  String   @map("product_id")
+  locationId String   @map("location_id")
+  quantity   Decimal  @default(0) @db.Decimal(12, 2)
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
-  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  location   Location  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
 
   @@unique([productId, locationId])
   @@index([locationId])
@@ -205,22 +226,22 @@ model StockQuant {
 }
 
 model StockLedger {
-  id             String    @id @default(uuid())
-  moveId         String?   @map("move_id")
-  productId      String    @map("product_id")
-  fromLocationId String    @map("from_location_id")
-  toLocationId   String    @map("to_location_id")
-  quantity       Decimal   @db.Decimal(12, 2)
-  userId         String?   @map("user_id")
-  referenceNo    String    @map("reference_no")
+  id             String   @id @default(uuid())
+  moveId         String?  @map("move_id")
+  productId      String   @map("product_id")
+  fromLocationId String   @map("from_location_id")
+  toLocationId   String   @map("to_location_id")
+  quantity       Decimal  @db.Decimal(12, 2)
+  userId         String?  @map("user_id")
+  referenceNo    String   @map("reference_no")
   notes          String?
-  createdAt      DateTime  @default(now()) @map("created_at")
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  move           StockMove? @relation(fields: [moveId], references: [id])
-  product        Product    @relation(fields: [productId], references: [id])
-  fromLocation   Location   @relation("LedgerFromLocation", fields: [fromLocationId], references: [id])
-  toLocation     Location   @relation("LedgerToLocation", fields: [toLocationId], references: [id])
-  user           User?      @relation(fields: [userId], references: [id])
+  move         StockMove? @relation(fields: [moveId], references: [id])
+  product      Product    @relation(fields: [productId], references: [id])
+  fromLocation Location   @relation("LedgerFromLocation", fields: [fromLocationId], references: [id])
+  toLocation   Location   @relation("LedgerToLocation", fields: [toLocationId], references: [id])
+  user         User?      @relation(fields: [userId], references: [id])
 
   @@index([productId, createdAt])
   @@index([referenceNo])
