@@ -187,7 +187,7 @@ export class AuthService {
       };
     }
 
-    const targetContact = user.phone || user.email;
+    const targetContact = input.email ? user.email : (user.phone || user.email);
     await OtpService.createAndSendResetOtp(user.id, targetContact);
 
     return {

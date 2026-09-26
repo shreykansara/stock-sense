@@ -9,7 +9,9 @@ export interface VerifiedGoogleUser {
 }
 
 export class GoogleAuthService {
-  private static client: OAuth2Client = new OAuth2Client(config.googleClientId);
+  private static getClient(): OAuth2Client {
+    return new OAuth2Client(config.googleClientId);
+  }
 
   /**
    * Verifies the Google ID token and returns trusted profile information.
@@ -21,7 +23,8 @@ export class GoogleAuthService {
     }
 
     try {
-      const ticket = await this.client.verifyIdToken({
+      const client = this.getClient();
+      const ticket = await client.verifyIdToken({
         idToken,
         audience: config.googleClientId || undefined,
       });

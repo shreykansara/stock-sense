@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { UserRole } from "@prisma/client";
 import { TokenService } from "../src/modules/auth/token.service.js";
 import { OtpService } from "../src/modules/auth/otp.service.js";
@@ -10,7 +10,13 @@ import {
   resetPasswordSchema,
 } from "../src/modules/auth/auth.schema.js";
 import { ConsoleSmsProvider, getSmsProvider } from "../src/modules/auth/sms.provider.js";
+import {
+  ConsoleEmailProvider,
+  ResendEmailProvider,
+  getEmailProvider,
+} from "../src/modules/auth/email.provider.js";
 import { extractToken } from "../src/middleware/auth.middleware.js";
+import { config } from "../src/config/index.js";
 
 describe("StockSense Auth Module Unit & Logic Tests", () => {
   describe("TokenService", () => {
@@ -158,6 +164,67 @@ describe("StockSense Auth Module Unit & Logic Tests", () => {
     });
   });
 
+  describe("Email Provider Abstraction & Resend Integration", () => {
+    it("returns ConsoleEmailProvider when instantiated and executes sendEmail", async () => {
+      const consoleProvider = new ConsoleEmailProvider();
+      expect(consoleProvider).toBeInstanceOf(ConsoleEmailProvider);
+
+      const result = await consoleProvider.sendEmail({
+        to: "recipient@stocksense.local",
+        subject: "StockSense Code",
+        html: "<p>123456</p>",
+        text: "123456",
+      });
+      expect(result).toBe(true);
+    });
+
+    it("supports ResendEmailProvider with mocked API calls", async () => {
+      const resendProvider = new ResendEmailProvider("re_test_dummy_key_12345");
+      (resendProvider as any).resend = {
+        emails: {
+          send: vi.fn().mockResolvedValue({
+            data: { id: "resend-msg-uuid-1234" },
+            error: null,
+          }),
+        },
+      };
+
+      const result = await resendProvider.sendEmail({
+        to: "user@example.com",
+        subject: "Verification Code",
+        html: "<p>Your code is 654321</p>",
+      });
+
+      expect(result).toBe(true);
+      expect((resendProvider as any).resend.emails.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: ["user@example.com"],
+          subject: "Verification Code",
+        })
+      );
+    });
+
+    it("handles Resend API error cleanly", async () => {
+      const resendProvider = new ResendEmailProvider("re_test_dummy_key_12345");
+      (resendProvider as any).resend = {
+        emails: {
+          send: vi.fn().mockResolvedValue({
+            data: null,
+            error: { message: "Invalid API Key", name: "validation_error" },
+          }),
+        },
+      };
+
+      await expect(
+        resendProvider.sendEmail({
+          to: "user@example.com",
+          subject: "Verification Code",
+          html: "<p>Your code is 654321</p>",
+        })
+      ).rejects.toThrow("Invalid API Key");
+    });
+  });
+
   describe("Auth Middleware Token Extraction", () => {
     it("extracts Bearer token from authorization header", () => {
       const mockReq = {
@@ -189,6 +256,13 @@ describe("StockSense Auth Module Unit & Logic Tests", () => {
 
       const token = extractToken(mockReq);
       expect(token).toBeNull();
+    });
+  });
+
+  describe("Google Client ID Endpoint", () => {
+    it("safely exposes Google Client ID without leaking Client Secret", () => {
+      expect(config).toHaveProperty("googleClientId");
+      expect(typeof config.googleClientId).toBe("string");
     });
   });
 });

@@ -8,6 +8,7 @@ import {
   resetPasswordSchema,
 } from "./auth.schema.js";
 import { AuthService } from "./auth.service.js";
+import { config } from "../../config/index.js";
 import { sendCreated, sendSuccess, sendError } from "../../utils/response.js";
 
 const COOKIE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -62,6 +63,14 @@ export class AuthController {
       });
 
       sendSuccess(res, result, "Google authentication successful");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getGoogleClientId(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      sendSuccess(res, { clientId: config.googleClientId });
     } catch (error) {
       next(error);
     }
