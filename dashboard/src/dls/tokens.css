@@ -1,0 +1,181 @@
+/**
+ * StockSense Design Language System (DLS)
+ * Derived from reference/stocksense_design_system/DESIGN.md
+ * Calibrated for high-density enterprise inventory & supply chain workflows.
+ */
+
+:root {
+  /* Surface System */
+  --ss-color-surface: #f8f9ff;
+  --ss-color-surface-dim: #cbdbf5;
+  --ss-color-surface-bright: #f8f9ff;
+  --ss-color-surface-container-lowest: #ffffff;
+  --ss-color-surface-container-low: #eff4ff;
+  --ss-color-surface-container: #e5eeff;
+  --ss-color-surface-container-high: #dce9ff;
+  --ss-color-surface-container-highest: #d3e4fe;
+  --ss-color-on-surface: #0b1c30;
+  --ss-color-on-surface-variant: #424754;
+  --ss-color-inverse-surface: #213145;
+  --ss-color-inverse-on-surface: #eaf1ff;
+  --ss-color-outline: #727785;
+  --ss-color-outline-variant: #c2c6d6;
+  --ss-color-surface-tint: #005ac2;
+
+  /* Primary / Action Palette */
+  --ss-color-primary: #2563eb;
+  --ss-color-primary-hover: #1d4ed8;
+  --ss-color-primary-active: #1e40af;
+  --ss-color-primary-light: #3b82f6;
+  --ss-color-on-primary: #ffffff;
+  --ss-color-primary-container: #2170e4;
+  --ss-color-on-primary-container: #fefcff;
+  --ss-color-primary-focus-ring: rgba(37, 99, 235, 0.2);
+
+  /* Deep Navy & Neutral Hierarchy */
+  --ss-color-navy-dark: #0f172a;
+  --ss-color-navy-card: #1e293b;
+  --ss-color-navy-border: #334155;
+  --ss-color-surface-base: #f8fafc;
+  --ss-color-surface-card: #ffffff;
+  --ss-color-surface-subtle: #f1f5f9;
+  --ss-color-border-subtle: #e2e8f0;
+  --ss-color-border-strong: #cbd5e1;
+  --ss-color-text-main: #0f172a;
+  --ss-color-text-muted: #64748b;
+  --ss-color-text-secondary: #475569;
+  --ss-color-text-placeholder: #94a3b8;
+
+  /* Secondary & Tertiary */
+  --ss-color-secondary: #565e74;
+  --ss-color-on-secondary: #ffffff;
+  --ss-color-secondary-container: #dae2fd;
+  --ss-color-on-secondary-container: #5c647a;
+  --ss-color-tertiary: #006947;
+  --ss-color-on-tertiary: #ffffff;
+  --ss-color-tertiary-container: #00855b;
+  --ss-color-on-tertiary-container: #f5fff6;
+
+  /* Status Tokens: High-Legibility Telemetry */
+  /* In Stock / Confirmed / Done */
+  --ss-status-success-bg: #ecfdf5;
+  --ss-status-success-text: #065f46;
+  --ss-status-success-border: #a7f3d0;
+  --ss-status-success-dot: #10b981;
+
+  /* Low Stock / Pending Approval / Attention */
+  --ss-status-warning-bg: #fffbeb;
+  --ss-status-warning-text: #92400e;
+  --ss-status-warning-border: #fde68a;
+  --ss-status-warning-dot: #f59e0b;
+
+  /* Stockout / Scrapped / Cancelled / Error */
+  --ss-status-danger-bg: #fef2f2;
+  --ss-status-danger-text: #991b1b;
+  --ss-status-danger-border: #fecaca;
+  --ss-status-danger-dot: #ef4444;
+  --ss-color-error: #ba1a1a;
+  --ss-color-error-hover: #dc2626;
+
+  /* Draft / In Transit / Info */
+  --ss-status-info-bg: #eff6ff;
+  --ss-status-info-text: #1e40af;
+  --ss-status-info-border: #bfdbfe;
+  --ss-status-info-dot: #3b82f6;
+
+  /* Neutral / Archived */
+  --ss-status-neutral-bg: #f1f5f9;
+  --ss-status-neutral-text: #334155;
+  --ss-status-neutral-border: #cbd5e1;
+  --ss-status-neutral-dot: #64748b;
+
+  /* Typography Standard */
+  --ss-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ss-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Tabular Numerals Setting */
+  --ss-font-tabular: 'Inter', sans-serif;
+  --ss-font-tabular-features: 'tnum' 1, 'cv05' 1;
+
+  /* Typography Scale */
+  --ss-text-display-lg-size: 36px;
+  --ss-text-display-lg-line: 44px;
+  --ss-text-display-lg-weight: 700;
+  --ss-text-display-lg-tracking: -0.02em;
+
+  --ss-text-headline-lg-size: 28px;
+  --ss-text-headline-lg-line: 36px;
+  --ss-text-headline-lg-weight: 700;
+  --ss-text-headline-lg-tracking: -0.02em;
+
+  --ss-text-headline-md-size: 20px;
+  --ss-text-headline-md-line: 28px;
+  --ss-text-headline-md-weight: 600;
+  --ss-text-headline-md-tracking: -0.01em;
+
+  --ss-text-headline-sm-size: 16px;
+  --ss-text-headline-sm-line: 24px;
+  --ss-text-headline-sm-weight: 600;
+  --ss-text-headline-sm-tracking: -0.005em;
+
+  --ss-text-body-lg-size: 16px;
+  --ss-text-body-lg-line: 24px;
+  --ss-text-body-lg-weight: 400;
+
+  --ss-text-body-md-size: 14px;
+  --ss-text-body-md-line: 20px;
+  --ss-text-body-md-weight: 400;
+
+  --ss-text-body-sm-size: 13px;
+  --ss-text-body-sm-line: 18px;
+  --ss-text-body-sm-weight: 400;
+
+  --ss-text-label-md-size: 12px;
+  --ss-text-label-md-line: 16px;
+  --ss-text-label-md-weight: 600;
+  --ss-text-label-md-tracking: 0.02em;
+
+  --ss-text-label-sm-size: 11px;
+  --ss-text-label-sm-line: 14px;
+  --ss-text-label-sm-weight: 600;
+  --ss-text-label-sm-tracking: 0.04em;
+
+  /* Spacing Scale */
+  --ss-space-2xs: 0.125rem; /* 2px */
+  --ss-space-xs: 0.25rem;  /* 4px */
+  --ss-space-sm: 0.5rem;   /* 8px */
+  --ss-space-md: 0.75rem;  /* 12px */
+  --ss-space-lg: 1rem;     /* 16px */
+  --ss-space-xl: 1.5rem;   /* 24px */
+  --ss-space-2xl: 2rem;    /* 32px */
+  --ss-space-3xl: 3rem;    /* 48px */
+  --ss-gutter: 1rem;       /* 16px */
+  --ss-gutter-lg: 1.5rem;  /* 24px */
+  --ss-margin: 1.5rem;     /* 24px */
+
+  /* Border Radii */
+  --ss-radius-sm: 0.125rem; /* 2px */
+  --ss-radius-default: 0.25rem; /* 4px - standard for inputs/buttons */
+  --ss-radius-md: 0.375rem; /* 6px */
+  --ss-radius-lg: 0.5rem; /* 8px - standard for cards/panels */
+  --ss-radius-xl: 0.75rem; /* 12px */
+  --ss-radius-full: 9999px; /* full pill for badges */
+
+  /* Elevation & Depth */
+  --ss-elevation-0: none;
+  --ss-elevation-1: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --ss-elevation-2: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --ss-elevation-3: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
+  --ss-overlay-backdrop: rgba(15, 23, 42, 0.45);
+
+  /* Transitions */
+  --ss-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ss-transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ss-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout dimensions */
+  --ss-sidebar-width: 240px;
+  --ss-sidebar-collapsed-width: 68px;
+  --ss-header-height: 60px;
+  --ss-table-row-height: 40px;
+}

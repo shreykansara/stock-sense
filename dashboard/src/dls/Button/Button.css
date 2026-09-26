@@ -1,0 +1,140 @@
+.ss-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ss-space-sm);
+  font-family: var(--ss-font-sans);
+  font-weight: 600;
+  border-radius: var(--ss-radius-default); /* 4px */
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: all var(--ss-transition-fast);
+  outline: none;
+  position: relative;
+}
+
+.ss-button:focus-visible {
+  box-shadow: 0 0 0 3px var(--ss-color-primary-focus-ring);
+}
+
+.ss-button:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+/* Sizing */
+.ss-button--sm {
+  height: 28px;
+  padding: 0 var(--ss-space-sm);
+  font-size: var(--ss-text-label-sm-size);
+}
+
+.ss-button--md {
+  height: 36px;
+  padding: 0 var(--ss-space-md);
+  font-size: var(--ss-text-body-md-size);
+}
+
+.ss-button--lg {
+  height: 42px;
+  padding: 0 var(--ss-space-lg);
+  font-size: var(--ss-text-body-lg-size);
+}
+
+/* Variants */
+.ss-button--primary {
+  background-color: var(--ss-color-primary);
+  color: var(--ss-color-on-primary);
+  border-color: var(--ss-color-primary);
+}
+
+.ss-button--primary:hover:not(:disabled) {
+  background-color: var(--ss-color-primary-hover);
+  border-color: var(--ss-color-primary-hover);
+}
+
+.ss-button--secondary {
+  background-color: var(--ss-color-surface-card);
+  color: var(--ss-color-text-main);
+  border-color: var(--ss-color-border-strong);
+}
+
+.ss-button--secondary:hover:not(:disabled) {
+  background-color: var(--ss-color-surface-subtle);
+  border-color: var(--ss-color-outline);
+}
+
+.ss-button--destructive {
+  background-color: var(--ss-color-error-red);
+  color: #ffffff;
+  border-color: var(--ss-color-error-red);
+}
+
+.ss-button--destructive:hover:not(:disabled) {
+  background-color: var(--ss-color-error-hover);
+  border-color: var(--ss-color-error-hover);
+}
+
+.ss-button--ghost {
+  background-color: transparent;
+  color: var(--ss-color-text-secondary);
+  border-color: transparent;
+}
+
+.ss-button--ghost:hover:not(:disabled) {
+  background-color: var(--ss-color-surface-subtle);
+  color: var(--ss-color-text-main);
+}
+
+.ss-button--outline {
+  background-color: transparent;
+  color: var(--ss-color-primary);
+  border-color: var(--ss-color-primary);
+}
+
+.ss-button--outline:hover:not(:disabled) {
+  background-color: var(--ss-status-info-bg);
+}
+
+/* Icon-only button action: 32x32px square button with #64748B glyphs */
+.ss-button--icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  border-radius: var(--ss-radius-default);
+  background-color: transparent;
+  color: var(--ss-color-text-muted);
+  border: 1px solid transparent;
+}
+
+.ss-button--icon:hover:not(:disabled) {
+  background-color: var(--ss-color-surface-subtle);
+  color: var(--ss-color-text-main);
+  border-color: var(--ss-color-border-subtle);
+}
+
+.ss-button--icon-bordered {
+  border-color: var(--ss-color-border-subtle);
+  background-color: var(--ss-color-surface-card);
+}
+
+.ss-button--full-width {
+  width: 100%;
+}
+
+.ss-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ss-button__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ss-spin 0.7s linear infinite;
+}

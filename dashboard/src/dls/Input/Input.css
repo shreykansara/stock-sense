@@ -1,0 +1,185 @@
+.ss-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-space-xs);
+  width: 100%;
+}
+
+.ss-field__label-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ss-field__label {
+  font-family: var(--ss-font-sans);
+  font-size: var(--ss-text-label-md-size);
+  font-weight: 600;
+  color: var(--ss-color-on-surface);
+  letter-spacing: 0.01em;
+}
+
+.ss-field__required {
+  color: var(--ss-color-error-red);
+  margin-left: 2px;
+}
+
+.ss-field__hint {
+  font-size: var(--ss-text-label-sm-size);
+  color: var(--ss-color-text-muted);
+}
+
+.ss-field__error {
+  font-size: var(--ss-text-label-sm-size);
+  color: var(--ss-color-error-red);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Input Box Wrapper */
+.ss-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--ss-color-surface-card);
+  border: 1px solid var(--ss-color-border-strong);
+  border-radius: var(--ss-radius-default); /* 4px */
+  transition: all var(--ss-transition-fast);
+  overflow: hidden;
+}
+
+.ss-input-wrap:focus-within {
+  border-color: var(--ss-color-primary-light);
+  box-shadow: 0 0 0 2px var(--ss-color-primary-focus-ring);
+}
+
+.ss-input-wrap--error {
+  border-color: var(--ss-color-error-red);
+}
+.ss-input-wrap--error:focus-within {
+  border-color: var(--ss-color-error-red);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.ss-input-wrap--disabled {
+  background-color: var(--ss-color-surface-subtle);
+  border-color: var(--ss-color-border-subtle);
+  cursor: not-allowed;
+}
+
+/* Core Input Element */
+.ss-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 var(--ss-space-md);
+  font-family: var(--ss-font-sans);
+  font-size: var(--ss-text-body-md-size);
+  color: var(--ss-color-text-main);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.ss-input::placeholder {
+  color: var(--ss-color-text-placeholder);
+}
+
+.ss-input:disabled {
+  cursor: not-allowed;
+  color: var(--ss-color-text-muted);
+}
+
+/* Prefix & Suffix */
+.ss-input-prefix,
+.ss-input-suffix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--ss-space-sm);
+  color: var(--ss-color-text-muted);
+  flex-shrink: 0;
+}
+
+/* Scanner Specialized Input */
+.ss-input-wrap--scanner {
+  background-color: #f8fafc;
+  border-color: var(--ss-color-border-strong);
+}
+.ss-input-wrap--scanner .ss-input {
+  font-family: var(--ss-font-mono);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+.ss-scanner-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background-color: #eff6ff;
+  color: var(--ss-color-primary);
+  border: 1px solid #bfdbfe;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Select Dropdown */
+.ss-select {
+  appearance: none;
+  width: 100%;
+  height: 36px;
+  padding: 0 32px 0 var(--ss-space-md);
+  font-family: var(--ss-font-sans);
+  font-size: var(--ss-text-body-md-size);
+  color: var(--ss-color-text-main);
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.ss-select-arrow {
+  position: absolute;
+  right: var(--ss-space-sm);
+  pointer-events: none;
+  color: var(--ss-color-text-muted);
+  display: flex;
+  align-items: center;
+}
+
+/* Checkbox */
+.ss-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ss-space-sm);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--ss-text-body-md-size);
+  color: var(--ss-color-text-main);
+}
+.ss-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--ss-color-border-strong);
+  border-radius: var(--ss-radius-sm);
+  background-color: var(--ss-color-surface-card);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: all var(--ss-transition-fast);
+}
+.ss-checkbox:checked {
+  background-color: var(--ss-color-primary);
+  border-color: var(--ss-color-primary);
+}
+.ss-checkbox:checked::before {
+  content: "";
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+.ss-checkbox:focus-visible {
+  box-shadow: 0 0 0 2px var(--ss-color-primary-focus-ring);
+}

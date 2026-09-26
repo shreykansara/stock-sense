@@ -1,0 +1,21 @@
+.ss-logo {
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+  text-decoration: none;
+}
+
+.ss-logo--sm svg {
+  height: 28px;
+  width: auto;
+}
+
+.ss-logo--md svg {
+  height: 36px;
+  width: auto;
+}
+
+.ss-logo--lg svg {
+  height: 48px;
+  width: auto;
+}

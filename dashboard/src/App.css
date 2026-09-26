@@ -1,0 +1,123 @@
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--ss-color-surface-base);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--ss-margin); /* 24px */
+  display: flex;
+  flex-direction: column;
+  gap: var(--ss-space-xl);
+}
+
+/* Page Header Block */
+.page-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-hero__title {
+  font-size: var(--ss-text-headline-lg-size);
+  font-weight: 700;
+  color: var(--ss-color-navy-dark);
+  letter-spacing: -0.02em;
+}
+
+.page-hero__subtitle {
+  font-size: var(--ss-text-body-md-size);
+  color: var(--ss-color-text-muted);
+  margin-top: 4px;
+}
+
+/* Grid Layouts */
+.grid-cols-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--ss-space-lg);
+}
+
+.grid-cols-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--ss-space-lg);
+}
+
+.grid-cols-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: var(--ss-space-lg);
+}
+
+/* Color Swatches Grid */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.color-swatch {
+  border: 1px solid var(--ss-color-border-subtle);
+  border-radius: var(--ss-radius-default);
+  overflow: hidden;
+  background: white;
+}
+
+.color-swatch__box {
+  height: 48px;
+  width: 100%;
+}
+
+.color-swatch__info {
+  padding: 8px;
+  font-size: 11px;
+}
+
+.color-swatch__name {
+  font-weight: 600;
+  color: var(--ss-color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.color-swatch__hex {
+  color: var(--ss-color-text-muted);
+  font-family: var(--ss-font-mono);
+}
+
+/* Interactive Demo Box */
+.demo-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.scan-log {
+  background-color: #0f172a;
+  color: #38bdf8;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-family: var(--ss-font-mono);
+  font-size: 12px;
+  max-height: 140px;
+  overflow-y: auto;
+  line-height: 1.6;
+}

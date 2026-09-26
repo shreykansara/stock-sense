@@ -1,0 +1,92 @@
+/* Alert Banners */
+.ss-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--ss-radius-default);
+  font-size: var(--ss-text-body-md-size);
+  border: 1px solid transparent;
+}
+
+.ss-alert--info {
+  background-color: var(--ss-status-info-bg);
+  border-color: var(--ss-status-info-border);
+  color: var(--ss-status-info-text);
+}
+
+.ss-alert--success {
+  background-color: var(--ss-status-success-bg);
+  border-color: var(--ss-status-success-border);
+  color: var(--ss-status-success-text);
+}
+
+.ss-alert--warning {
+  background-color: var(--ss-status-warning-bg);
+  border-color: var(--ss-status-warning-border);
+  color: var(--ss-status-warning-text);
+}
+
+.ss-alert--danger {
+  background-color: var(--ss-status-danger-bg);
+  border-color: var(--ss-status-danger-border);
+  color: var(--ss-status-danger-text);
+}
+
+.ss-alert__icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ss-alert__content {
+  flex: 1;
+}
+
+.ss-alert__title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* Empty State */
+.ss-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.ss-empty-state__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--ss-radius-lg);
+  background-color: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.ss-empty-state__title {
+  font-size: var(--ss-text-headline-sm-size);
+  font-weight: 600;
+  color: var(--ss-color-text-main);
+  margin-bottom: 6px;
+}
+
+.ss-empty-state__desc {
+  font-size: var(--ss-text-body-sm-size);
+  color: var(--ss-color-text-muted);
+  max-width: 380px;
+  margin-bottom: 20px;
+}
+
+/* Skeleton Loading Shimmer */
+.ss-skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: ss-shimmer 1.5s infinite;
+  border-radius: var(--ss-radius-default);
+}
